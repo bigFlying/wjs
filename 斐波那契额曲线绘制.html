@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>斐波那契额曲线</title>
+</head>
+<body>
+	<canvas id="container"></canvas>
+</body>
+</html>
+<script>
+	//生成斐波那切数列
+	function getFibonacciArr(n){
+		var fibonacciArr = [];
+
+		for(var i = 0 ; i < n ; i++){
+			if(i <= 1){
+				fibonacciArr.push(i *10);
+			}else{
+				fibonacciArr.push(fibonacciArr[i-1] + fibonacciArr[i-2]);
+			}
+		}
+		return fibonacciArr;
+	}
+	// 斐波那契数组
+	var step = 10;
+	var poArr = getFibonacciArr(step);
+	console.log(poArr);
+	// 储存所有圆弧的圆点坐标及半径 的数组
+	var pot = [];
+	//最外侧4个（4个方向)的圆弧圆点坐标及半径（根据本文章上面的图片坐标手动设置）
+	pot.push({x:poArr[step-1],y:poArr[step-1],r:poArr[step-1]});//第一个圆弧半径和与与圆心点
+	pot.push({x:poArr[step-1],y:poArr[step-2],r:poArr[step-2]});//第二个圆弧半径和与与圆心点
+	pot.push({x:poArr[step-1] + poArr[step - 4 ],y:poArr[step-2],r:poArr[step-3]});//第三个圆弧半径和与与圆心点
+	pot.push({x:poArr[step-1] + poArr[step - 4 ],y:poArr[step-1]-poArr[step - 4 ],r:poArr[step-4]});
+	// 第四个圆弧半径和与与圆心点
+	console.log(poArr.length);
+    console.log(pot);
+	//循环输出其它步数的圆弧圆点坐标及半径
+    var index = 0;
+	for( var i = poArr.length - 5 ; i > 0 ; i--){
+		index++;
+		if(index % 4 == 1){
+			pot.push({x:pot[pot.length - 4].x + poArr[i],y:pot[pot.length - 4].y - poArr[i+1],r:poArr[i]});
+		}else if(index % 4 == 2){
+			pot.push({x:pot[pot.length - 4].x + poArr[i+1],y:pot[pot.length - 4].y + poArr[i],r:poArr[i]});
+		}else if(index == 3){
+			pot.push({x:pot[pot.length - 4].x - poArr[i],  y:pot[pot.length - 4].y + poArr[i+1],r:poArr[i] });
+		}else if(index % 4 == 0){
+			pot.push({x:pot[pot.length - 4].x - poArr[i+1], y:pot[pot.length - 4].y - poArr[i],r:poArr[i]})
+		}
+		if(i == 2){
+			break;
+		}
+	}
+	console.log(pot);
+
+	var canvas = document.getElementById('container');
+	var ctx = canvas.getContext('2d');
+	canvas.width = poArr[step - 1 ] + poArr[step - 2 ];
+	canvas.height = poArr[step - 1 ];
+	// canvas.Style.border = '1px solid red';
+	canvas.style.border = "1px solid #000";
+	ctx.beginPath();
+	ctx.strokeStyle = '#ff0000';
+
+	//手动画出的圆弧
+	// ctx.arc(canvas.width - poArr[8],canvas.height,poArr[9],1 * Math.PI,1.5 * Math.PI);
+	// ctx.arc(canvas.width - poArr[8],canvas.height - poArr[7],poArr[8],1.5 * Math.PI,0);
+	// ctx.arc(canvas.width - poArr[7],canvas.height - poArr[7],poArr[7],0,.5 * Math.PI);
+	// ctx.arc(canvas.width - poArr[7],canvas.height - poArr[6],poArr[6],.5 * Math.PI,1 * Math.PI);
+	
+	// ctx.arc(canvas.width - poArr[7] - poArr[3] - poArr[2],canvas.height - poArr[6],poArr[5],1 * Math.PI,1.5 * Math.PI);
+	// ctx.arc(canvas.width - poArr[7] - poArr[3] - poArr[2],canvas.height - poArr[7] + poArr[4],poArr[4],1.5 * Math.PI,0);
+	// ctx.arc(canvas.width - poArr[7] - poArr[3],canvas.height - poArr[7] + poArr[4],poArr[3],0,.5 * Math.PI);
+	// ctx.arc(canvas.width - poArr[7] - poArr[3],canvas.height - poArr[6] - poArr[2],poArr[2],.5 * Math.PI,1 * Math.PI);
+	var index2 = 0;
+	for( var k in pot){
+		index2++;
+		if(index2 % 4 == 1){
+			ctx.arc(pot[k].x,pot[k].y,pot[k].r,1 * Math.PI ,1.5 * Math.PI);
+		}else if(index2 % 4 == 2){
+			ctx.arc(pot[k].x,pot[k].y,pot[k].r,1.5 * Math.PI ,0 * Math.PI);
+		}else if(index2 % 4 == 3){
+			ctx.arc(pot[k].x,pot[k].y,pot[k].r,0 * Math.PI ,0.5 * Math.PI);
+		}else if(index2 % 4 == 0){
+			ctx.arc(pot[k].x,pot[k].y,pot[k].r,0.5 * Math.PI ,1 * Math.PI);
+		}
+	}
+
+   ctx.stroke();
+</script>
